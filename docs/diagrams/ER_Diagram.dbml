@@ -1,0 +1,114 @@
+Table users {
+  id bigint [pk, increment]
+  name varchar(100) [not null]
+  email varchar(150) [unique, not null]
+  password_hash varchar(255) [not null]
+  role varchar(20) [not null]
+  phone varchar(20)
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table patients {
+  id bigint [pk, increment]
+  name varchar(100) [not null]
+  date_of_birth date
+  gender varchar(20)
+  phone varchar(20)
+  address text
+  emergency_contact varchar(100)
+  created_at timestamp [not null]
+}
+
+Table nurses {
+  id bigint [pk, increment]
+  name varchar(100) [not null]
+  specialization varchar(100) [not null]
+  qualification varchar(150)
+  experience_years int
+  service_area varchar(150)
+  phone varchar(20)
+  status varchar(20) [not null]
+  created_at timestamp [not null]
+}
+
+Table services {
+  id bigint [pk, increment]
+  name varchar(100) [unique, not null]
+  description text
+  duration_minutes int [not null]
+  base_fee decimal(10,2) [not null]
+  active boolean [not null]
+  created_at timestamp [not null]
+}
+
+Table nurse_availability {
+  id bigint [pk, increment]
+  nurse_id bigint [not null]
+  available_date date [not null]
+  start_time time [not null]
+  end_time time [not null]
+  status varchar(20) [not null]
+}
+
+Table visit_requests {
+  id bigint [pk, increment]
+  patient_id bigint [not null]
+  service_id bigint [not null]
+  preferred_date date [not null]
+  preferred_time time [not null]
+  location text [not null]
+  priority varchar(20) [not null]
+  description text
+  status varchar(20) [not null]
+  created_at timestamp [not null]
+}
+
+Table appointments {
+  id bigint [pk, increment]
+  visit_request_id bigint [not null]
+  nurse_id bigint [not null]
+  scheduled_date date [not null]
+  start_time time [not null]
+  end_time time [not null]
+  status varchar(20) [not null]
+  notes text
+  created_at timestamp [not null]
+}
+
+Table status_history {
+  id bigint [pk, increment]
+  appointment_id bigint [not null]
+  changed_by bigint [not null]
+  old_status varchar(30)
+  new_status varchar(30) [not null]
+  changed_at timestamp [not null]
+  remarks text
+}
+
+Table feedback {
+  id bigint [pk, increment]
+  appointment_id bigint [not null]
+  patient_id bigint [not null]
+  rating int [not null]
+  comments text
+  created_at timestamp [not null]
+}
+
+Ref: nurses.id < nurse_availability.nurse_id
+
+Ref: patients.id < visit_requests.patient_id
+
+Ref: services.id < visit_requests.service_id
+
+Ref: visit_requests.id < appointments.visit_request_id
+
+Ref: nurses.id < appointments.nurse_id
+
+Ref: appointments.id < status_history.appointment_id
+
+Ref: users.id < status_history.changed_by
+
+Ref: appointments.id < feedback.appointment_id
+
+Ref: patients.id < feedback.patient_id
