@@ -35,18 +35,16 @@ Roles:
 
 Stores patient-specific information.
 
-| Column            | Type         | Constraints                    |
-| ----------------- | ------------ | ------------------------------ |
-| id                | BIGINT       | Primary Key, Auto Increment    |
-| user_id           | BIGINT       | Foreign Key → users.id, UNIQUE |
-| date_of_birth     | DATE         |                                |
-| gender            | VARCHAR(20)  |                                |
-| address           | TEXT         |                                |
-| emergency_contact | VARCHAR(100) |                                |
-
-Relationship:
-
-**users 1 : 1 patients**
+| Column            | Type         | Constraints                 |
+| ----------------- | ------------ | --------------------------- |
+| id                | BIGINT       | Primary Key, Auto Increment |
+| name              | VARCHAR(100) | NOT NULL                    |
+| date_of_birth     | DATE         |                             |
+| gender            | VARCHAR(20)  |                             |
+| phone             | VARCHAR(20)  |                             |
+| address           | TEXT         |                             |
+| emergency_contact | VARCHAR(100) |                             |
+| created_at        | TIMESTAMP    | NOT NULL                    |
 
 ---
 
@@ -54,25 +52,23 @@ Relationship:
 
 Stores nurse professional information.
 
-| Column           | Type         | Constraints                    |
-| ---------------- | ------------ | ------------------------------ |
-| id               | BIGINT       | Primary Key, Auto Increment    |
-| user_id          | BIGINT       | Foreign Key → users.id, UNIQUE |
-| specialization   | VARCHAR(100) | NOT NULL                       |
-| qualification    | VARCHAR(150) |                                |
-| experience_years | INT          |                                |
-| service_area     | VARCHAR(150) |                                |
-| status           | VARCHAR(20)  | NOT NULL                       |
+| Column           | Type         | Constraints                 |
+| ---------------- | ------------ | --------------------------- |
+| id               | BIGINT       | Primary Key, Auto Increment |
+| name             | VARCHAR(100) | NOT NULL                    |
+| specialization   | VARCHAR(100) | NOT NULL                    |
+| qualification    | VARCHAR(150) |                             |
+| experience_years | INT          |                             |
+| service_area     | VARCHAR(150) |                             |
+| phone            | VARCHAR(20)  |                             |
+| status           | VARCHAR(20)  | NOT NULL                    |
+| created_at       | TIMESTAMP    | NOT NULL                    |
 
 Possible status values:
 
 * ACTIVE
 * INACTIVE
 * ON_LEAVE
-
-Relationship:
-
-**users 1 : 1 nurses**
 
 ---
 
@@ -88,6 +84,7 @@ Stores available home healthcare services.
 | duration_minutes | INT           | NOT NULL                    |
 | base_fee         | DECIMAL(10,2) | NOT NULL                    |
 | active           | BOOLEAN       | NOT NULL                    |
+| created_at       | TIMESTAMP     | NOT NULL                    |
 
 Example services:
 
@@ -114,7 +111,7 @@ Stores the available time slots of nurses.
 
 Relationship:
 
-**nurses 1 : M nurse_availability**
+**nurses → nurse_availability**
 
 ---
 
@@ -149,8 +146,8 @@ Status values:
 
 Relationships:
 
-* **patients 1 : M visit_requests**
-* **services 1 : M visit_requests**
+* **patients → visit_requests**
+* **services → visit_requests**
 
 ---
 
@@ -158,17 +155,17 @@ Relationships:
 
 Stores scheduled home healthcare visits.
 
-| Column           | Type        | Constraints                             |
-| ---------------- | ----------- | --------------------------------------- |
-| id               | BIGINT      | Primary Key, Auto Increment             |
-| visit_request_id | BIGINT      | Foreign Key → visit_requests.id, UNIQUE |
-| nurse_id         | BIGINT      | Foreign Key → nurses.id                 |
-| scheduled_date   | DATE        | NOT NULL                                |
-| start_time       | TIME        | NOT NULL                                |
-| end_time         | TIME        | NOT NULL                                |
-| status           | VARCHAR(20) | NOT NULL                                |
-| notes            | TEXT        |                                         |
-| created_at       | TIMESTAMP   | NOT NULL                                |
+| Column           | Type        | Constraints                     |
+| ---------------- | ----------- | ------------------------------- |
+| id               | BIGINT      | Primary Key, Auto Increment     |
+| visit_request_id | BIGINT      | Foreign Key → visit_requests.id |
+| nurse_id         | BIGINT      | Foreign Key → nurses.id         |
+| scheduled_date   | DATE        | NOT NULL                        |
+| start_time       | TIME        | NOT NULL                        |
+| end_time         | TIME        | NOT NULL                        |
+| status           | VARCHAR(20) | NOT NULL                        |
+| notes            | TEXT        |                                 |
+| created_at       | TIMESTAMP   | NOT NULL                        |
 
 Status values:
 
@@ -180,8 +177,8 @@ Status values:
 
 Relationships:
 
-* **visit_requests 1 : 1 appointments**
-* **nurses 1 : M appointments**
+* **visit_requests → appointments**
+* **nurses → appointments**
 
 ---
 
@@ -193,31 +190,31 @@ Stores appointment status changes for tracking and auditing.
 | -------------- | ----------- | ----------------------------- |
 | id             | BIGINT      | Primary Key, Auto Increment   |
 | appointment_id | BIGINT      | Foreign Key → appointments.id |
+| changed_by     | BIGINT      | Foreign Key → users.id        |
 | old_status     | VARCHAR(30) |                               |
 | new_status     | VARCHAR(30) | NOT NULL                      |
-| changed_by     | BIGINT      | Foreign Key → users.id        |
 | changed_at     | TIMESTAMP   | NOT NULL                      |
 | remarks        | TEXT        |                               |
 
 Relationships:
 
-* **appointments 1 : M status_history**
-* **users 1 : M status_history**
+* **appointments → status_history**
+* **users → status_history**
 
 ---
 
 ### 2.9 feedback
 
-Stores patient feedback for completed appointments.
+Stores patient feedback for appointments.
 
-| Column         | Type      | Constraints                           |
-| -------------- | --------- | ------------------------------------- |
-| id             | BIGINT    | Primary Key, Auto Increment           |
-| appointment_id | BIGINT    | Foreign Key → appointments.id, UNIQUE |
-| patient_id     | BIGINT    | Foreign Key → patients.id             |
-| rating         | INT       | NOT NULL                              |
-| comments       | TEXT      |                                       |
-| created_at     | TIMESTAMP | NOT NULL                              |
+| Column         | Type      | Constraints                   |
+| -------------- | --------- | ----------------------------- |
+| id             | BIGINT    | Primary Key, Auto Increment   |
+| appointment_id | BIGINT    | Foreign Key → appointments.id |
+| patient_id     | BIGINT    | Foreign Key → patients.id     |
+| rating         | INT       | NOT NULL                      |
+| comments       | TEXT      |                               |
+| created_at     | TIMESTAMP | NOT NULL                      |
 
 Rating range:
 
@@ -225,24 +222,28 @@ Rating range:
 
 Relationships:
 
-* **appointments 1 : 1 feedback**
-* **patients 1 : M feedback**
+* **appointments → feedback**
+* **patients → feedback**
+
+---
 
 ## 3. Relationship Summary
 
-| Parent Table   | Child Table        | Relationship |
-| -------------- | ------------------ | ------------ |
-| users          | patients           | 1 : 1        |
-| users          | nurses             | 1 : 1        |
-| nurses         | nurse_availability | 1 : M        |
-| patients       | visit_requests     | 1 : M        |
-| services       | visit_requests     | 1 : M        |
-| visit_requests | appointments       | 1 : 1        |
-| nurses         | appointments       | 1 : M        |
-| appointments   | status_history     | 1 : M        |
-| users          | status_history     | 1 : M        |
-| appointments   | feedback           | 1 : 1        |
-| patients       | feedback           | 1 : M        |
+| Parent Table   | Child Table        |
+| -------------- | ------------------ |
+| nurses         | nurse_availability |
+| patients       | visit_requests     |
+| services       | visit_requests     |
+| visit_requests | appointments       |
+| nurses         | appointments       |
+| appointments   | status_history     |
+| users          | status_history     |
+| appointments   | feedback           |
+| patients       | feedback           |
+
+The relationships are represented through foreign keys in the child tables.
+
+---
 
 ## 4. Scheduling Business Logic
 
@@ -258,6 +259,8 @@ Before creating an appointment, the system should verify:
 
 If the conditions are satisfied, the appointment can be created and the visit request status can be updated.
 
+---
+
 ## 5. Data Integrity Rules
 
 * Every table has a primary key.
@@ -265,6 +268,5 @@ If the conditions are satisfied, the appointment can be created and the visit re
 * User email addresses must be unique.
 * Service names must be unique.
 * A nurse cannot have overlapping appointments.
-* A feedback record can be submitted only once for an appointment.
 * Appointment status changes are recorded in `status_history`.
 * Passwords are stored as secure hashes rather than plain text.
