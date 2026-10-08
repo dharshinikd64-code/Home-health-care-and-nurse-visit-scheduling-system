@@ -1,5 +1,6 @@
 package com.homehealthcare.controller;
 
+import com.homehealthcare.entity.User;
 import com.homehealthcare.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,11 @@ public class AuthController {
 
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody User user) {
+        return ResponseEntity.ok(authService.register(user));
     }
 
     @PostMapping("/login")
