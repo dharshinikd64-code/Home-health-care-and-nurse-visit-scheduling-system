@@ -1,12 +1,10 @@
 package com.homehealthcare.service;
 
-import com.homehealthcare.entity.Service;
 import com.homehealthcare.repository.ServiceRepository;
-import org.springframework.stereotype.Service as SpringService;
 
 import java.util.List;
 
-@SpringService
+@org.springframework.stereotype.Service
 public class ServiceService {
 
     private final ServiceRepository serviceRepository;
@@ -26,7 +24,6 @@ public class ServiceService {
 
     public com.homehealthcare.entity.Service createService(
             com.homehealthcare.entity.Service service) {
-
         return serviceRepository.save(service);
     }
 
